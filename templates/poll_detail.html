@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>Poll #{{ poll.poll_id }}</h2>
+<div class="spacer"></div>
+
+<div class="card">
+  <div class="row">
+    <div><strong>{{ poll.question }}</strong></div>
+    <span class="pill">{{ poll.poll_type }}</span>
+    <span class="muted">Created: {{ poll.created_at }}</span>
+    <a class="btn" href="/ui/polls">← Back</a>
+  </div>
+  <div class="spacer"></div>
+
+  <div class="grid">
+    {% for opt in poll.options %}
+    <div class="card" style="background:#0f1522">
+      <div class="row">
+        <div><strong>Option #{{ opt.option_id }}</strong></div>
+        <span class="pill">{{ opt.option_text }}</span>
+      </div>
+      <div class="spacer"></div>
+      <div class="grid grid-2">
+        <div>
+          <label>Upload Screenshot (maps to this option)</label>
+          <input type="file" accept="image/*" id="file_{{ opt.option_id }}">
+        </div>
+        <div class="row" style="align-items:flex-end;">
+          <button class="btn btn-ok" onclick="uploadShot({{ poll.poll_id }}, {{ opt.option_id }})">Upload</button>
+          <span id="st_{{ opt.option_id }}" class="muted"></span>
+        </div>
+      </div>
+      <div class="spacer"></div>
+      {% if opt.screenshot_url %}
+        <div id="prev_{{ opt.option_id }}">
+          <img src="{{ opt.screenshot_url }}" class="preview">
+        </div>
+      {% else %}
+        <div id="prev_{{ opt.option_id }}"></div>
+      {% endif %}
+    </div>
+    {% endfor %}
+  </div>
+</div>
+
+<script>
+async function uploadShot(poll_id, option_id) {
+  const fileInput = document.getElementById('file_' + option_id);
+  const st = document.getElementById('st_' + option_id);
+  const prev = document.getElementById('prev_' + option_id);
+  st.textContent = '';
+  prev.innerHTML = '';
+
+  if (!fileInput.files || fileInput.files.length === 0) {
+    st.textContent = 'Choose an image first.';
+    return;
+  }
+
+  const fd = new FormData();
+  fd.append('file', fileInput.files[0]);
+
+  st.textContent = 'Uploading…';
+  const res = await fetch(`/api/polls/${poll_id}/options/${option_id}/screenshot`, {
+    method: 'POST',
+    body: fd
+  });
+
+  if (!res.ok) {
+    let msg = 'Upload failed.';
+    try { const j = await res.json(); if (j && j.error) msg = j.error; } catch(e){}
+    st.textContent = msg;
+    return;
+  }
+
+  const data = await res.json();
+  st.textContent = 'Uploaded.';
+  const img = document.createElement('img');
+  img.src = data.screenshot_url;
+  img.className = 'preview';
+  prev.appendChild(img);
+}
+</script>
+{% endblock %}

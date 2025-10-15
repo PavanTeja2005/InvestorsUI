@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>Polls</h2>
+<div class="spacer"></div>
+<div class="card">
+  <div class="row">
+    <a class="btn btn-primary" href="/ui/polls/new">+ New Poll</a>
+    <button class="btn" id="refresh">Refresh</button>
+  </div>
+  <div class="spacer"></div>
+  <table id="polls">
+    <thead>
+      <tr><th>ID</th><th>Question</th><th>Type</th><th>Created</th><th></th></tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+</div>
+
+<script>
+async function loadPolls() {
+  const res = await fetch('/api/listpolls?limit=100');
+  const data = await res.json();
+  const tbody = document.querySelector('#polls tbody');
+  tbody.innerHTML = '';
+  (data || []).forEach(p => {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td><span class="code">#${p.poll_id}</span></td>
+      <td>${p.question}</td>
+      <td><span class="pill">${p.poll_type}</span></td>
+      <td class="muted">${p.created_at}</td>
+      <td><a class="btn" href="/ui/polls/${p.poll_id}">Open</a></td>
+    `;
+    tbody.appendChild(tr);
+  });
+}
+
+document.getElementById('refresh').addEventListener('click', loadPolls);
+loadPolls();
+</script>
+{% endblock %}

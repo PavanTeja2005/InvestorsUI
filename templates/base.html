@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <title>{{ title or "Trading Polls" }}</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <style>
+    :root { --bg:#0b0f15; --panel:#121826; --muted:#8aa0b4; --text:#e8eef6; --brand:#5aa9ff; --ok:#26c281; --err:#ff6b6b; }
+    * { box-sizing: border-box; }
+    body { margin:0; font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; background: var(--bg); color: var(--text); }
+    header { display:flex; gap:16px; align-items:center; padding:14px 18px; background: rgba(255,255,255,0.02); border-bottom:1px solid rgba(255,255,255,0.06); position:sticky; top:0; backdrop-filter: blur(6px); }
+    header a { color: var(--text); text-decoration: none; font-weight: 600; }
+    .brand { color: var(--brand); }
+    main { max-width: 980px; margin: 24px auto; padding: 0 16px; }
+    .card { background: var(--panel); border:1px solid rgba(255,255,255,0.06); border-radius: 14px; padding: 16px; }
+    .row { display:flex; gap:12px; align-items:center; flex-wrap: wrap; }
+    .row > * { margin: 4px 0; }
+    .btn { background: #1b263b; color: var(--text); border:1px solid rgba(255,255,255,0.1); padding: 10px 14px; border-radius: 10px; cursor:pointer; }
+    .btn:hover { background:#22304a; }
+    .btn-primary { background: var(--brand); color:#081018; border-color: transparent; }
+    .btn-primary:hover { filter: brightness(1.07); }
+    .btn-ok { background: var(--ok); color:#081018; border-color: transparent; }
+    .btn-err { background: var(--err); color:#081018; border-color: transparent; }
+    input, select, textarea { background:#0f1522; color:var(--text); border:1px solid rgba(255,255,255,0.12); border-radius:10px; padding:10px 12px; width:100%; }
+    label { font-size: 0.9rem; color: var(--muted); }
+    table { width:100%; border-collapse: collapse; }
+    th, td { text-align:left; padding:10px; border-bottom:1px solid rgba(255,255,255,0.08); }
+    th { color: var(--muted); font-weight:600; }
+    .muted { color: var(--muted); }
+    .spacer { height: 10px; }
+    .pill { padding:4px 8px; border-radius:999px; font-size:12px; background:#0f1522; color:var(--muted); border:1px solid rgba(255,255,255,0.08); }
+    .right { margin-left:auto; }
+    .grid { display:grid; gap:12px; }
+    @media(min-width: 720px){ .grid-2 { grid-template-columns: 1fr 1fr; } }
+    img.preview { max-width:100%; height:auto; border-radius:10px; border:1px solid rgba(255,255,255,0.08); }
+    .code { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; background:#0f1522; border:1px solid rgba(255,255,255,0.1); padding:8px 10px; border-radius:8px; }
+  </style>
+</head>
+<body>
+  <header>
+    <a href="/ui" class="brand">Trading Polls</a>
+    <a href="/ui/polls">Polls</a>
+    <a href="/ui/polls/new">Create Poll</a>
+    <span class="right muted">Web UI → API-backed</span>
+  </header>
+  <main>
+    {% block content %}{% endblock %}
+  </main>
+</body>
+</html>

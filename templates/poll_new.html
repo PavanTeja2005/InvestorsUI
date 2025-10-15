@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>Create Poll</h2>
+<div class="spacer"></div>
+<div class="card">
+  <div class="grid grid-2">
+    <div>
+      <label>Question</label>
+      <input id="question" placeholder="e.g., Execute EMA Trend?"/>
+    </div>
+    <div>
+      <label>Type</label>
+      <select id="poll_type">
+        <option value="single">single</option>
+        <option value="multi">multi</option>
+      </select>
+    </div>
+  </div>
+  <div class="spacer"></div>
+  <label>Options (one per line)</label>
+  <textarea id="options" rows="6" placeholder="Buy\nSell\nSkip"></textarea>
+  <div class="spacer"></div>
+  <div class="row">
+    <button id="create" class="btn btn-primary">Create</button>
+    <a href="/ui/polls" class="btn">Cancel</a>
+    <span id="status" class="muted"></span>
+  </div>
+</div>
+
+<script>
+async function createPoll() {
+  const question = document.getElementById('question').value.trim();
+  const poll_type = document.getElementById('poll_type').value;
+  const optionsRaw = document.getElementById('options').value.split('\n').map(s => s.trim()).filter(Boolean);
+  if (!question || optionsRaw.length === 0) {
+    document.getElementById('status').textContent = 'Question and at least one option are required.';
+    return;
+  }
+  const payload = {
+    question,
+    poll_type,
+    options: optionsRaw.map(o => ({ option_text: o }))
+  };
+  const res = await fetch('/api/polls', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload)
+  });
+  if (!res.ok) {
+    const e = await res.json().catch(() => ({}));
+    document.getElementById('status').textContent = (e && e.error) ? e.error : 'Error creating poll.';
+    return;
+  }
+  const saved = await res.json();
+  window.location.href = `/ui/polls/${saved.poll_id}`;
+}
+
+document.getElementById('create').addEventListener('click', createPoll);
+</script>
+{% endblock %}
